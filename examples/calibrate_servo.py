@@ -20,49 +20,41 @@ pwm = Adafruit_PCA9685.PCA9685()
 #pwm = Adafruit_PCA9685.PCA9685(address=0x41, busnum=2)
 
 # Configure min and max servo pulse lengths
-servo_min = 150  # Min pulse length out of 4096
-servo_max = 600  # Max pulse length out of 4096
-
-# Helper function to make setting a servo pulse width simpler.
-def set_servo_pulse(channel, pulse):
-    pulse_length = 1000000    # 1,000,000 us per second
-    pulse_length //= 60       # 60 Hz
-    print('{0}us per period'.format(pulse_length))
-    pulse_length //= 4096     # 12 bits of resolution
-    print('{0}us per bit'.format(pulse_length))
-    pulse *= 1000
-    pulse //= pulse_length
-    pwm.set_pwm(channel, 0, pulse)
-
-
+SERVO_MIN = 120  # Min pulse length out of 4096
+SERVO_MAX = 535  # Max pulse length out of 4096
+ANGLE_MIN = 0
+ANGLE_MAX = 180
 TOTAL_TICKS = 4096
-middle_pulse_period = 1.5
-min_pulse_period    = 2.0
-max_pulse_period    = 1.0
-pwm_period          = 20.0
-
-freq = int(1000/ pwm_period)
-
+FREQ = 50
+SERVO_CHANNEL=15
 # Set frequency to 60hz, good for servos.
-pwm.set_pwm_freq(freq)
+pwm.set_pwm_freq(FREQ)
 
-def calculate_ticks(angle=90):
-    return int(204.8 / 180 * angle + 204.8)
-
-def map_from_angle_to_tick(value, from_min=0, from_max=180, to_min=servro_min, to_max=servo_max):
+def map_from_angle_to_tick(value, from_min=ANGLE_MIN, from_max=ANGLE_MAX, to_min=SERVO_MIN, to_max=SERVO_MAX):
     tick = (to_max - to_min) / float(from_max - from_min) * (value - from_min) + to_min
     print("tick:" + str(tick))
     return int(tick)
 
-def test_run():
-    pwm.set_pwm(15, 0, calculate_ticks())
-    text = input("Continute?")
-    print('Moving servo on channel 0, press Ctrl-C to quit...')
+def bound_tick(value, to_min=SERVO_MIN, to_max=SERVO_MAX):
+    return min(max(SERVO_MIN, value), SERVO_MAX)
+
+def calibrate_by_angle():
+    print('Moving servo on channel %d, press Ctrl-C to quit...'%(SERVO_CHANNEL))
     while True:
-        # Move servo on channel O between extremes.
-        pwm.set_pwm(15, 0, calculate_ticks(0))
-        time.sleep(1)
-        pwm.set_pwm(15, 0, calculate_ticks(180))
+        angle=int(input("Input angle [%d, %d]:"%(ANGLE_MIN, ANGLE_MAX)))
+        tick=bound_tick(map_from_angle_to_tick(angle))
+        print("bounded tick: " + str(tick))
+        pwm.set_pwm(SERVO_CHANNEL, 0, tick)
         time.sleep(1)
 
-print(map_from_angle_to_tick(90))
+def calibrate_by_tick():
+    print('Moving servo on channel %d, press Ctrl-C to quit...'%(SERVO_CHANNEL))
+    while True:
+        tick=int(input("Input tick [%d, %d]:"%(TICK_MIN, TICK_MAX)))
+        tick=bound_tick(tick)
+        print("bounded tick: " + str(tick))
+        pwm.set_pwm(SERVO_CHANNEL, 0, tick)
+        time.sleep(1)
+
+# first test calibrate by tick to find the max and min tick
+# last verify it by angle
