@@ -67,6 +67,11 @@ class ServoCalibrator:
             if tick < self.tick_min or tick > self.tick_max:
                 confirm = input("Tick is outside of tick bound. Are you sure? [Y/N]")
                 if confirm == 'Y':
+                    # update min and max
+                    if tick < self.tick_min:
+                        self.tick_min = tick
+                    if tick > self.tick_max:
+                        self.tick_max = tick
                     ServoCalibrator.pwm.set_pwm(self.servo_channel, 0, tick)
                     time.sleep(1)
                 continue
@@ -89,13 +94,17 @@ class ServoCalibrator:
         print("\n*****************************************************")
         print("Verify tick by angle")
         print("*****************************************************\n")
-        self.tick_max = int(input("Enter servo MAX ticks:"))
         self.tick_min = int(input("Enter servo MIN ticks:"))
+        self.tick_max = int(input("Enter servo MAX ticks:"))
         if self.tick_min >= self.tick_max or self.tick_min < 0 or self.tick_min > ServoCalibrator.TOTAL_TICKS or \
                 self.tick_max < 0 or self.tick_max > ServoCalibrator.TOTAL_TICKS:
             print("Incorrect ticks!")
             return
         self.calibrate_by_angle()
+        print("\n*****************************************************")
+        print("Tick result")
+        print("*****************************************************\n")
+        print ("tick min: %d, tick max: %d" % (self.tick_min, self.tick_max))
 
 
 if __name__ == '__main__':
