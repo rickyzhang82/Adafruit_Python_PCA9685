@@ -84,7 +84,7 @@ class ServoCalibrator:
                                      ServoCalibrator.SERVO_CHANNEL_MAX)
         print("Set servo channel %d" % self.servo_channel)
         # first test calibrate by tick to find the max and min tick
-        ServoCalibrator.calibrate_by_tick()
+        self.calibrate_by_tick()
 
         # last verify it by angle
         print("\n*****************************************************")
@@ -96,7 +96,7 @@ class ServoCalibrator:
                 self.tick_max < 0 or self.tick_max > ServoCalibrator.TOTAL_TICKS:
             print("Incorrect ticks!")
             return
-        ServoCalibrator.calibrate_by_angle()
+        self.calibrate_by_angle()
 
 
 if __name__ == '__main__':
