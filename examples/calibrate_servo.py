@@ -36,9 +36,8 @@ class ServoCalibrator:
         print("tick:" + str(tick))
         return int(tick)
 
-    @staticmethod
-    def bound_tick(value, to_min, to_max):
-        return min(max(ServoCalibrator.DEFAULT_TICK_MIN, value), ServoCalibrator.DEFAULT_TICK_MAX)
+    def bound_tick(self, tick):
+        return min(max(self.tick_min, tick), self.tick_max)
 
     def calibrate_by_angle(self):
         print('Moving servo on channel %d, enter -1 to quit...' % self.servo_channel)
@@ -47,7 +46,7 @@ class ServoCalibrator:
             if -1 == angle:
                 break
 
-            tick = ServoCalibrator.bound_tick(
+            tick = self.bound_tick(
                 ServoCalibrator.map_from_angle_to_tick(angle, to_min=self.tick_min, to_max=self.tick_max))
             print("bounded tick: " + str(tick))
             ServoCalibrator.pwm.set_pwm(self.servo_channel, 0, tick)
