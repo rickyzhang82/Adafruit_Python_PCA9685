@@ -84,8 +84,8 @@ class ServoCalibrator:
         print("*****************************************************\n")
         self.tick_max = int(input("Enter servo MAX ticks:"))
         self.tick_min = int(input("Enter servo MIN ticks:"))
-        if self.tick_min >= self.tick_max || self.tick_min < 0 || self.tick_min > ServoCalibrator.TOTAL_TICKS || \
-            self.tick_max < 0 || self.tick_max > ServoCalibrator.TOTAL_TICKS:
+        if self.tick_min >= self.tick_max or self.tick_min < 0 or self.tick_min > ServoCalibrator.TOTAL_TICKS or \
+            self.tick_max < 0 or self.tick_max > ServoCalibrator.TOTAL_TICKS:
             print("Incorrect ticks!")
             return
         ServoCalibrator.calibrate_by_angle(servo_channel=self.servo_channel,
