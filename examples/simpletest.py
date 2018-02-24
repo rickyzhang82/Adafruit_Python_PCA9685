@@ -34,13 +34,27 @@ def set_servo_pulse(channel, pulse):
     pulse //= pulse_length
     pwm.set_pwm(channel, 0, pulse)
 
-# Set frequency to 60hz, good for servos.
-pwm.set_pwm_freq(60)
 
+TOTAL_TICKS = 4096
+middle_pulse_period = 1.5
+min_pulse_period    = 2.0
+max_pulse_period    = 1.0
+pwm_period          = 20.0
+
+freq = int(1000/ pwm_period)
+
+# Set frequency to 60hz, good for servos.
+pwm.set_pwm_freq(freq)
+
+def calculate_ticks(angle=90):
+    return int(204.8 / 180 * angle + 204.8)
+
+pwm.set_pwm(15, 0, calculate_ticks())
+text = input("Continute?")
 print('Moving servo on channel 0, press Ctrl-C to quit...')
 while True:
     # Move servo on channel O between extremes.
-    pwm.set_pwm(0, 0, servo_min)
+    pwm.set_pwm(15, 0, calculate_ticks(0))
     time.sleep(1)
-    pwm.set_pwm(0, 0, servo_max)
+    pwm.set_pwm(15, 0, calculate_ticks(180))
     time.sleep(1)
